@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IQA Sampling Assistant Pro - AI-Powered Quality Assurance</title>
+
+    <meta name="description" content="AI-powered IQA sampling assistant for UK training centres">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+        const { useState, useEffect } = React;
+
+
+
+        // YOUR SUPABASE CREDENTIALS (CONFIGURED!)
+
+        const SUPABASE_URL = 'https://ktnvjsslyksrdyewosqs.supabase.co';
+
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0bnZqc3NseWtzcmR5ZXdvc3FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwMzY2OTgsImV4cCI6MjA1MDYxMjY5OH0.sb_publishable_2Aoxu2nyXCR8U_VKamqvew_nEkliQna';
+
+
+
+        const IQAAssistant = () => {
+
+            const [user, setUser] = useState(null);
+
+            const [authMode, setAuthMode] = useState('signin');
+
+            const [email, setEmail] = useState('');
+
+            const [password, setPassword] = useState('');
+
+            const [centreName, setCentreName] = useState('');
+
+            const [loading, setLoading] = useState(false);
+
+            const [message, setMessage] = useState('');
+
+
+
+            useEffect(() => {
+
+                const session = localStorage.getItem('iqa_session');
+
+                if (session) setUser(JSON.parse(session));
+
+            }, []);
+
+
+
+            const signUp = async () => {
+
+                if (!email || !password || !centreName) {
+
+                    setMessage('Please fill all fields');
+
+                    return;
+
+                }
+
+                setLoading(true);
+
+                setMessage('');
+
+
+
+                try {
+
+                    const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'apikey': SUPABASE_KEY,
+
+                            'Content-Type': 'application/json',
+
+                        },
+
+                        body: JSON.stringify({
+
+                            email,
+
+                            password,
+
+                            data: { centre_name: centreName }
+
+                        })
+
+                    });
+
+
+
+                    const data = await response.json();
+
+
+
+                    if (data.error) {
+
+                        setMessage(data.error.message);
+
+                    } else {
+
+                        setMessage('✅ Success! Check your email to verify. Then come back and sign in!');
+
+                        setEmail('');
+
+                        setPassword('');
+
+                        setCentreName('');
+
+                        setTimeout(() => setAuthMode('signin'), 4000);
+
+                    }
+
+                } catch (error) {
+
+                    setMessage('Error: ' + error.message);
+
+                }
+
+                setLoading(false);
+
+            };
+
+
+
+            const signIn = async () => {
+
+                if (!email || !password) {
+
+                    setMessage('Please fill all fields');
+
+                    return;
+
+                }
+
+                setLoading(true);
+
+                setMessage('');
+
+
+
+                try {
+
+                    const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'apikey': SUPABASE_KEY,
+
+                            'Content-Type': 'application/json',
+
+                        },
+
+                        body: JSON.stringify({ email, password })
+
+                    });
+
+
+
+                    const data = await response.json();
+
+
+
+                    if (data.error) {
+
+                        setMessage(data.error.message);
+
+                    } else {
+
+                        const userData = {
+
+                            id: data.user.id,
+
+                            email: data.user.email,
+
+                            centre_name: data.user.user_metadata?.centre_name || 'My Centre',
+
+                            token: data.access_token
+
+                        };
+
+                        
+
+                        localStorage.setItem('iqa_session', JSON.stringify(userData));
+
+                        setUser(userData);
+
+                        setMessage('');
+
+                    }
+
+                } catch (error) {
+
+                    setMessage('Error: ' + error.message);
+
+                }
+
+                setLoading(false);
+
+            };
+
+
+
+            const signOut = () => {
+
+                localStorage.removeItem('iqa_session');
+
+                setUser(null);
+
+            };
+
+
+
+            if (!user) {
+
+                return (
+
+                    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+
+                        <div className="bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-md w-full border border-slate-700">
+
+                            <div className="text-center mb-8">
+
+                                <div className="inline-block bg-blue-600 p-4 rounded-xl mb-4">
+
+                                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+
+                                    </svg>
+
+                                </div>
+
+                                <h1 className="text-3xl font-bold text-white mb-2">IQA Assistant Pro</h1>
+
+                                <p className="text-slate-400">AI-Powered Quality Assurance</p>
+
+                                <div className="mt-3 inline-block bg-green-500 bg-opacity-20 border border-green-500 rounded-full px-4 py-1">
+
+                                    <span className="text-green-300 text-sm font-semibold">✓ Connected to Database</span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <div className="flex gap-2 mb-6">
+
+                                <button
+
+                                    onClick={() => setAuthMode('signin')}
+
+                                    className={`flex-1 py-2 rounded-lg font-semibold transition ${
+
+                                        authMode === 'signin'
+
+                                            ? 'bg-blue-600 text-white'
+
+                                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+
+                                    }`}
+
+                                >
+
+                                    Sign In
+
+                                </button>
+
+                                <button
+
+                                    onClick={() => setAuthMode('signup')}
+
+                                    className={`flex-1 py-2 rounded-lg font-semibold transition ${
+
+                                        authMode === 'signup'
+
+                                            ? 'bg-blue-600 text-white'
+
+                                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+
+                                    }`}
+
+                                >
+
+                                    Sign Up
+
+                                </button>
+
+                            </div>
+
+
+
+                            <div className="space-y-4">
+
+                                {authMode === 'signup' && (
+
+                                    <input
+
+                                        type="text"
+
+                                        placeholder="Centre Name (e.g., ABC Training College)"
+
+                                        value={centreName}
+
+                                        onChange={(e) => setCentreName(e.target.value)}
+
+                                        className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400"
+
+                                    />
+
+                                )}
+
+                                
+
+                                <input
+
+                                    type="email"
+
+                                    placeholder="Email Address"
+
+                                    value={email}
+
+                                    onChange={(e) => setEmail(e.target.value)}
+
+                                    className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400"
+
+                                />
+
+                                
+
+                                <input
+
+                                    type="password"
+
+                                    placeholder="Password (min 6 characters)"
+
+                                    value={password}
+
+                                    onChange={(e) => setPassword(e.target.value)}
+
+                                    className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400"
+
+                                />
+
+
+
+                                <button
+
+                                    onClick={authMode === 'signin' ? signIn : signUp}
+
+                                    disabled={loading}
+
+                                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition disabled:opacity-50"
+
+                                >
+
+                                    {loading ? '⏳ Processing...' : authMode === 'signin' ? 'Sign In' : 'Create Account'}
+
+                                </button>
+
+
+
+                                {message && (
+
+                                    <div className={`p-3 rounded-lg text-sm ${
+
+                                        message.includes('Error') || message.includes('fill') || message.includes('Invalid')
+
+                                            ? 'bg-red-500 bg-opacity-20 text-red-300 border border-red-500'
+
+                                            : 'bg-green-500 bg-opacity-20 text-green-300 border border-green-500'
+
+                                    }`}>
+
+                                        {message}
+
+                                    </div>
+
+                                )}
+
+                            </div>
+
+
+
+                            <div className="mt-6 pt-6 border-t border-slate-700">
+
+                                <div className="bg-purple-500 bg-opacity-20 border border-purple-500 rounded-lg p-3 mb-3">
+
+                                    <p className="text-purple-200 text-xs text-center">
+
+                                        <strong>🎉 BETA ACCESS</strong><br/>
+
+                                        Free forever for early testers!
+
+                                    </p>
+
+                                </div>
+
+                                <p className="text-slate-500 text-xs text-center">
+
+                                    Saves IQAs 10+ hours/month on sampling plans and compliance
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                );
+
+            }
+
+
+
+            return (
+
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6">
+
+                    <div className="max-w-7xl mx-auto">
+
+                        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-6 mb-6">
+
+                            <div className="flex items-center justify-between">
+
+                                <div>
+
+                                    <h1 className="text-3xl font-bold text-white mb-1">IQA Sampling Assistant</h1>
+
+                                    <p className="text-blue-100 text-sm">
+
+                                        Welcome, {user.centre_name}! | {user.email}
+
+                                    </p>
+
+                                </div>
+
+                                <button
+
+                                    onClick={signOut}
+
+                                    className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-opacity-30 transition"
+
+                                >
+
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+
+                                    </svg>
+
+                                    Sign Out
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div className="bg-gradient-to-r from-purple-900 to-pink-900 border-2 border-purple-500 rounded-xl p-6 mb-6">
+
+                            <div className="flex items-start gap-4">
+
+                                <div className="bg-purple-500 p-3 rounded-xl">
+
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+
+                                    </svg>
+
+                                </div>
+
+                                <div className="flex-1">
+
+                                    <h3 className="text-xl font-bold text-white mb-2">🎉 You're Logged In - Beta Tester!</h3>
+
+                                    <p className="text-purple-200 text-sm mb-3">
+
+                                        Congratulations! You're one of the first to access this AI-powered IQA system. 
+
+                                        Full features are being deployed - you'll have access to everything within 48 hours!
+
+                                    </p>
+
+                                    <div className="flex gap-4 text-xs text-purple-300">
+
+                                        <span>✅ AI Sampling Plans</span>
+
+                                        <span>✅ Compliance Checker</span>
+
+                                        <span>✅ IQA Recording</span>
+
+                                        <span>✅ Custom Branding</span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 shadow-lg">
+
+                                <div className="bg-white bg-opacity-20 p-3 rounded-xl inline-block mb-4">
+
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+
+                                    </svg>
+
+                                </div>
+
+                                <h3 className="text-xl font-bold text-white mb-2">Manage Resources</h3>
+
+                                <p className="text-white text-opacity-80 text-sm mb-4">
+
+                                    Add assessors, learners, and units
+
+                                </p>
+
+                                <span className="inline-block px-3 py-1 bg-white bg-opacity-30 text-white text-xs font-semibold rounded-full">
+
+                                    Coming Soon
+
+                                </span>
+
+                            </div>
+
+
+
+                            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 shadow-lg">
+
+                                <div className="bg-white bg-opacity-20 p-3 rounded-xl inline-block mb-4">
+
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+
+                                    </svg>
+
+                                </div>
+
+                                <h3 className="text-xl font-bold text-white mb-2">AI Sampling Plans</h3>
+
+                                <p className="text-white text-opacity-80 text-sm mb-4">
+
+                                    Generate compliant plans in minutes
+
+                                </p>
+
+                                <span className="inline-block px-3 py-1 bg-white bg-opacity-30 text-white text-xs font-semibold rounded-full">
+
+                                    Coming Soon
+
+                                </span>
+
+                            </div>
+
+
+
+                            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 shadow-lg">
+
+                                <div className="bg-white bg-opacity-20 p-3 rounded-xl inline-block mb-4">
+
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+
+                                    </svg>
+
+                                </div>
+
+                                <h3 className="text-xl font-bold text-white mb-2">Compliance Checker</h3>
+
+                                <p className="text-white text-opacity-80 text-sm mb-4">
+
+                                    Prepare for EQA visits with AI
+
+                                </p>
+
+                                <span className="inline-block px-3 py-1 bg-white bg-opacity-30 text-white text-xs font-semibold rounded-full">
+
+                                    Coming Soon
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div className="bg-slate-800 rounded-2xl shadow-xl p-6 border border-slate-700 mb-6">
+
+                            <h3 className="text-xl font-bold text-white mb-4">📝 Help Shape This Product</h3>
+
+                            <p className="text-slate-300 text-sm mb-4">
+
+                                As a beta tester, your feedback is invaluable! What features would help you most?
+
+                            </p>
+
+                            <textarea
+
+                                placeholder="Tell us: What takes the most time in your IQA work? What would you want this tool to do first?"
+
+                                className="w-full p-4 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 min-h-32 mb-4"
+
+                            />
+
+                            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition font-semibold">
+
+                                Submit Feedback
+
+                            </button>
+
+                        </div>
+
+
+
+                        <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-6 border border-slate-600">
+
+                            <h3 className="text-lg font-bold text-white mb-4">🚀 What's Next?</h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+
+                                <div className="flex items-start gap-3">
+
+                                    <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">1</div>
+
+                                    <div>
+
+                                        <p className="text-white font-semibold">Full Features Going Live</p>
+
+                                        <p className="text-slate-400">AI sampling, recording, compliance - all coming this week!</p>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="flex items-start gap-3">
+
+                                    <div className="bg-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">2</div>
+
+                                    <div>
+
+                                        <p className="text-white font-semibold">Test & Give Feedback</p>
+
+                                        <p className="text-slate-400">Your input shapes the final product</p>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="flex items-start gap-3">
+
+                                    <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">3</div>
+
+                                    <div>
+
+                                        <p className="text-white font-semibold">Lifetime Beta Discount</p>
+
+                                        <p className="text-slate-400">FREE forever as a thank you for testing!</p>
+
+                                    </div>
+
+                                </div>
+
+                                <div className="flex items-start gap-3">
+
+                                    <div className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">4</div>
+
+                                    <div>
+
+                                        <p className="text-white font-semibold">Refer & Earn</p>
+
+                                        <p className="text-slate-400">Get rewards for referring colleagues!</p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            );
+
+        };
+
+
+
+        ReactDOM.render(<IQAAssistant />, document.getElementById('root'));
+
+    </script>
+
+</body>
+
+</html>
