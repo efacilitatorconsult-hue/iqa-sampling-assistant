@@ -1,743 +1,437 @@
+
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>IQA Sampling Assistant Pro - AI-Powered Quality Assurance</title>
-
-    <meta name="description" content="AI-powered IQA sampling assistant for UK training centres">
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    <title>IQA Assistant - Milestone Educational Consultancy</title>
     <style>
-
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+        h1 {
+            text-align: center;
+            color: #1e293b;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: border 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 5px auto;
+            display: block;
+            text-align: center;
+            width: fit-content;
+        }
+        .hidden { display: none; }
+        .dashboard {
+            text-align: center;
+        }
+        .welcome {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        .feature {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .feature h3 {
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        .feature p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .logout {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
     </style>
-
 </head>
-
 <body>
+    <div class="card">
+        <div id="authView">
+            <div class="logo">🎓</div>
+            <h1>IQA Assistant Pro</h1>
+            <p class="subtitle">Milestone Educational Consultancy</p>
+            <div class="badge">✨ Beta Access - Free Forever</div>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('signin')">Sign In</button>
+                <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+            </div>
 
-    <div id="root"></div>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div id="centreField" class="form-group hidden">
+                    <input type="text" id="centreName" placeholder="Centre Name" />
+                </div>
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email Address" required />
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password (min 6 characters)" required />
+                </div>
+                <button type="submit" class="btn" id="authBtn">Sign In</button>
+            </form>
 
-    <script type="text/babel">
+            <div id="message"></div>
+        </div>
 
-        const { useState, useEffect } = React;
+        <div id="dashboardView" class="dashboard hidden">
+            <div class="welcome">
+                <h2>Welcome! 🎉</h2>
+                <p id="userInfo"></p>
+            </div>
 
+            <div class="feature">
+                <h3>🎯 AI Sampling Plans</h3>
+                <p>Generate compliant IQA sampling plans in minutes</p>
+                <span style="color: #f59e0b; font-size: 12px;">Coming Soon</span>
+            </div>
 
+            <div class="feature">
+                <h3>✅ Compliance Checker</h3>
+                <p>Prepare for EQA visits with AI analysis</p>
+                <span style="color: #f59e0b; font-size: 12px;">Coming Soon</span>
+            </div>
 
-        // YOUR SUPABASE CREDENTIALS (CONFIGURED!)
+            <div class="feature">
+                <h3>📝 IQA Recording</h3>
+                <p>Track outcomes with AI-generated feedback</p>
+                <span style="color: #f59e0b; font-size: 12px;">Coming Soon</span>
+            </div>
 
+            <button class="logout" onclick="logout()">Sign Out</button>
+        </div>
+    </div>
+
+    <script>
         const SUPABASE_URL = 'https://ktnvjsslyksrdyewosqs.supabase.co';
-
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0bnZqc3NseWtzcmR5ZXdvc3FzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwMzY2OTgsImV4cCI6MjA1MDYxMjY5OH0.sb_publishable_2Aoxu2nyXCR8U_VKamqvew_nEkliQna';
 
-
-
-        const IQAAssistant = () => {
-
-            const [user, setUser] = useState(null);
-
-            const [authMode, setAuthMode] = useState('signin');
-
-            const [email, setEmail] = useState('');
-
-            const [password, setPassword] = useState('');
-
-            const [centreName, setCentreName] = useState('');
-
-            const [loading, setLoading] = useState(false);
-
-            const [message, setMessage] = useState('');
-
-
-
-            useEffect(() => {
-
-                const session = localStorage.getItem('iqa_session');
-
-                if (session) setUser(JSON.parse(session));
-
-            }, []);
-
-
-
-            const signUp = async () => {
-
-                if (!email || !password || !centreName) {
-
-                    setMessage('Please fill all fields');
-
-                    return;
-
-                }
-
-                setLoading(true);
-
-                setMessage('');
-
-
-
-                try {
-
-                    const response = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
-
-                        method: 'POST',
-
-                        headers: {
-
-                            'apikey': SUPABASE_KEY,
-
-                            'Content-Type': 'application/json',
-
-                        },
-
-                        body: JSON.stringify({
-
-                            email,
-
-                            password,
-
-                            data: { centre_name: centreName }
-
-                        })
-
-                    });
-
-
-
-                    const data = await response.json();
-
-
-
-                    if (data.error) {
-
-                        setMessage(data.error.message);
-
-                    } else {
-
-                        setMessage('✅ Success! Check your email to verify. Then come back and sign in!');
-
-                        setEmail('');
-
-                        setPassword('');
-
-                        setCentreName('');
-
-                        setTimeout(() => setAuthMode('signin'), 4000);
-
-                    }
-
-                } catch (error) {
-
-                    setMessage('Error: ' + error.message);
-
-                }
-
-                setLoading(false);
-
-            };
-
-
-
-            const signIn = async () => {
-
-                if (!email || !password) {
-
-                    setMessage('Please fill all fields');
-
-                    return;
-
-                }
-
-                setLoading(true);
-
-                setMessage('');
-
-
-
-                try {
-
-                    const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-
-                        method: 'POST',
-
-                        headers: {
-
-                            'apikey': SUPABASE_KEY,
-
-                            'Content-Type': 'application/json',
-
-                        },
-
-                        body: JSON.stringify({ email, password })
-
-                    });
-
-
-
-                    const data = await response.json();
-
-
-
-                    if (data.error) {
-
-                        setMessage(data.error.message);
-
-                    } else {
-
-                        const userData = {
-
-                            id: data.user.id,
-
-                            email: data.user.email,
-
-                            centre_name: data.user.user_metadata?.centre_name || 'My Centre',
-
-                            token: data.access_token
-
-                        };
-
-                        
-
-                        localStorage.setItem('iqa_session', JSON.stringify(userData));
-
-                        setUser(userData);
-
-                        setMessage('');
-
-                    }
-
-                } catch (error) {
-
-                    setMessage('Error: ' + error.message);
-
-                }
-
-                setLoading(false);
-
-            };
-
-
-
-            const signOut = () => {
-
-                localStorage.removeItem('iqa_session');
-
-                setUser(null);
-
-            };
-
-
-
-            if (!user) {
-
-                return (
-
-                    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
-
-                        <div className="bg-slate-800 rounded-2xl shadow-2xl p-8 max-w-md w-full border border-slate-700">
-
-                            <div className="text-center mb-8">
-
-                                <div className="inline-block bg-blue-600 p-4 rounded-xl mb-4">
-
-                                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-
-                                    </svg>
-
-                                </div>
-
-                                <h1 className="text-3xl font-bold text-white mb-2">IQA Assistant Pro</h1>
-
-                                <p className="text-slate-400">AI-Powered Quality Assurance</p>
-
-                                <div className="mt-3 inline-block bg-green-500 bg-opacity-20 border border-green-500 rounded-full px-4 py-1">
-
-                                    <span className="text-green-300 text-sm font-semibold">✓ Connected to Database</span>
-
-                                </div>
-
-                            </div>
-
-
-
-                            <div className="flex gap-2 mb-6">
-
-                                <button
-
-                                    onClick={() => setAuthMode('signin')}
-
-                                    className={`flex-1 py-2 rounded-lg font-semibold transition ${
-
-                                        authMode === 'signin'
-
-                                            ? 'bg-blue-600 text-white'
-
-                                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-
-                                    }`}
-
-                                >
-
-                                    Sign In
-
-                                </button>
-
-                                <button
-
-                                    onClick={() => setAuthMode('signup')}
-
-                                    className={`flex-1 py-2 rounded-lg font-semibold transition ${
-
-                                        authMode === 'signup'
-
-                                            ? 'bg-blue-600 text-white'
-
-                                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-
-                                    }`}
-
-                                >
-
-                                    Sign Up
-
-                                </button>
-
-                            </div>
-
-
-
-                            <div className="space-y-4">
-
-                                {authMode === 'signup' && (
-
-                                    <input
-
-                                        type="text"
-
-                                        placeholder="Centre Name (e.g., ABC Training College)"
-
-                                        value={centreName}
-
-                                        onChange={(e) => setCentreName(e.target.value)}
-
-                                        className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400"
-
-                                    />
-
-                                )}
-
-                                
-
-                                <input
-
-                                    type="email"
-
-                                    placeholder="Email Address"
-
-                                    value={email}
-
-                                    onChange={(e) => setEmail(e.target.value)}
-
-                                    className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400"
-
-                                />
-
-                                
-
-                                <input
-
-                                    type="password"
-
-                                    placeholder="Password (min 6 characters)"
-
-                                    value={password}
-
-                                    onChange={(e) => setPassword(e.target.value)}
-
-                                    className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400"
-
-                                />
-
-
-
-                                <button
-
-                                    onClick={authMode === 'signin' ? signIn : signUp}
-
-                                    disabled={loading}
-
-                                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition disabled:opacity-50"
-
-                                >
-
-                                    {loading ? '⏳ Processing...' : authMode === 'signin' ? 'Sign In' : 'Create Account'}
-
-                                </button>
-
-
-
-                                {message && (
-
-                                    <div className={`p-3 rounded-lg text-sm ${
-
-                                        message.includes('Error') || message.includes('fill') || message.includes('Invalid')
-
-                                            ? 'bg-red-500 bg-opacity-20 text-red-300 border border-red-500'
-
-                                            : 'bg-green-500 bg-opacity-20 text-green-300 border border-green-500'
-
-                                    }`}>
-
-                                        {message}
-
-                                    </div>
-
-                                )}
-
-                            </div>
-
-
-
-                            <div className="mt-6 pt-6 border-t border-slate-700">
-
-                                <div className="bg-purple-500 bg-opacity-20 border border-purple-500 rounded-lg p-3 mb-3">
-
-                                    <p className="text-purple-200 text-xs text-center">
-
-                                        <strong>🎉 BETA ACCESS</strong><br/>
-
-                                        Free forever for early testers!
-
-                                    </p>
-
-                                </div>
-
-                                <p className="text-slate-500 text-xs text-center">
-
-                                    Saves IQAs 10+ hours/month on sampling plans and compliance
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                );
-
-            }
-
-
-
-            return (
-
-                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6">
-
-                    <div className="max-w-7xl mx-auto">
-
-                        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-2xl p-6 mb-6">
-
-                            <div className="flex items-center justify-between">
-
-                                <div>
-
-                                    <h1 className="text-3xl font-bold text-white mb-1">IQA Sampling Assistant</h1>
-
-                                    <p className="text-blue-100 text-sm">
-
-                                        Welcome, {user.centre_name}! | {user.email}
-
-                                    </p>
-
-                                </div>
-
-                                <button
-
-                                    onClick={signOut}
-
-                                    className="flex items-center gap-2 bg-white bg-opacity-20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-opacity-30 transition"
-
-                                >
-
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-
-                                    </svg>
-
-                                    Sign Out
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div className="bg-gradient-to-r from-purple-900 to-pink-900 border-2 border-purple-500 rounded-xl p-6 mb-6">
-
-                            <div className="flex items-start gap-4">
-
-                                <div className="bg-purple-500 p-3 rounded-xl">
-
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-
-                                    </svg>
-
-                                </div>
-
-                                <div className="flex-1">
-
-                                    <h3 className="text-xl font-bold text-white mb-2">🎉 You're Logged In - Beta Tester!</h3>
-
-                                    <p className="text-purple-200 text-sm mb-3">
-
-                                        Congratulations! You're one of the first to access this AI-powered IQA system. 
-
-                                        Full features are being deployed - you'll have access to everything within 48 hours!
-
-                                    </p>
-
-                                    <div className="flex gap-4 text-xs text-purple-300">
-
-                                        <span>✅ AI Sampling Plans</span>
-
-                                        <span>✅ Compliance Checker</span>
-
-                                        <span>✅ IQA Recording</span>
-
-                                        <span>✅ Custom Branding</span>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-                            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 shadow-lg">
-
-                                <div className="bg-white bg-opacity-20 p-3 rounded-xl inline-block mb-4">
-
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-
-                                    </svg>
-
-                                </div>
-
-                                <h3 className="text-xl font-bold text-white mb-2">Manage Resources</h3>
-
-                                <p className="text-white text-opacity-80 text-sm mb-4">
-
-                                    Add assessors, learners, and units
-
-                                </p>
-
-                                <span className="inline-block px-3 py-1 bg-white bg-opacity-30 text-white text-xs font-semibold rounded-full">
-
-                                    Coming Soon
-
-                                </span>
-
-                            </div>
-
-
-
-                            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 shadow-lg">
-
-                                <div className="bg-white bg-opacity-20 p-3 rounded-xl inline-block mb-4">
-
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-
-                                    </svg>
-
-                                </div>
-
-                                <h3 className="text-xl font-bold text-white mb-2">AI Sampling Plans</h3>
-
-                                <p className="text-white text-opacity-80 text-sm mb-4">
-
-                                    Generate compliant plans in minutes
-
-                                </p>
-
-                                <span className="inline-block px-3 py-1 bg-white bg-opacity-30 text-white text-xs font-semibold rounded-full">
-
-                                    Coming Soon
-
-                                </span>
-
-                            </div>
-
-
-
-                            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 shadow-lg">
-
-                                <div className="bg-white bg-opacity-20 p-3 rounded-xl inline-block mb-4">
-
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-
-                                    </svg>
-
-                                </div>
-
-                                <h3 className="text-xl font-bold text-white mb-2">Compliance Checker</h3>
-
-                                <p className="text-white text-opacity-80 text-sm mb-4">
-
-                                    Prepare for EQA visits with AI
-
-                                </p>
-
-                                <span className="inline-block px-3 py-1 bg-white bg-opacity-30 text-white text-xs font-semibold rounded-full">
-
-                                    Coming Soon
-
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div className="bg-slate-800 rounded-2xl shadow-xl p-6 border border-slate-700 mb-6">
-
-                            <h3 className="text-xl font-bold text-white mb-4">📝 Help Shape This Product</h3>
-
-                            <p className="text-slate-300 text-sm mb-4">
-
-                                As a beta tester, your feedback is invaluable! What features would help you most?
-
-                            </p>
-
-                            <textarea
-
-                                placeholder="Tell us: What takes the most time in your IQA work? What would you want this tool to do first?"
-
-                                className="w-full p-4 bg-slate-700 border border-slate-600 rounded-xl text-white placeholder-slate-400 min-h-32 mb-4"
-
-                            />
-
-                            <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition font-semibold">
-
-                                Submit Feedback
-
-                            </button>
-
-                        </div>
-
-
-
-                        <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-6 border border-slate-600">
-
-                            <h3 className="text-lg font-bold text-white mb-4">🚀 What's Next?</h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-
-                                <div className="flex items-start gap-3">
-
-                                    <div className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">1</div>
-
-                                    <div>
-
-                                        <p className="text-white font-semibold">Full Features Going Live</p>
-
-                                        <p className="text-slate-400">AI sampling, recording, compliance - all coming this week!</p>
-
-                                    </div>
-
-                                </div>
-
-                                <div className="flex items-start gap-3">
-
-                                    <div className="bg-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">2</div>
-
-                                    <div>
-
-                                        <p className="text-white font-semibold">Test & Give Feedback</p>
-
-                                        <p className="text-slate-400">Your input shapes the final product</p>
-
-                                    </div>
-
-                                </div>
-
-                                <div className="flex items-start gap-3">
-
-                                    <div className="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">3</div>
-
-                                    <div>
-
-                                        <p className="text-white font-semibold">Lifetime Beta Discount</p>
-
-                                        <p className="text-slate-400">FREE forever as a thank you for testing!</p>
-
-                                    </div>
-
-                                </div>
-
-                                <div className="flex items-start gap-3">
-
-                                    <div className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 font-bold">4</div>
-
-                                    <div>
-
-                                        <p className="text-white font-semibold">Refer & Earn</p>
-
-                                        <p className="text-slate-400">Get rewards for referring colleagues!</p>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            );
-
+        // State management
+        const state = {
+            currentMode: 'signin',
+            sessionKey: 'iqa_session',
+            retryAttempts: 3,
+            retryDelay: 1000
         };
 
+        // Utility functions
+        const utils = {
+            debounce: (fn, delay) => {
+                let timeout;
+                return (...args) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => fn(...args), delay);
+                };
+            },
+            
+            validateEmail: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+            
+            validatePassword: (pwd) => pwd.length >= 6,
+            
+            getSession: () => {
+                try {
+                    const data = localStorage.getItem(state.sessionKey);
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.error('Session parse error:', e);
+                    return null;
+                }
+            },
+            
+            setSession: (user) => {
+                try {
+                    localStorage.setItem(state.sessionKey, JSON.stringify(user));
+                    return true;
+                } catch (e) {
+                    console.error('Session save error:', e);
+                    return false;
+                }
+            },
+            
+            clearSession: () => localStorage.removeItem(state.sessionKey)
+        };
 
+        // API client with retry logic
+        const api = {
+            async request(endpoint, options, attempt = 1) {
+                try {
+                    const response = await fetch(`${SUPABASE_URL}${endpoint}`, {
+                        ...options,
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Content-Type': 'application/json',
+                            ...options.headers
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.error && attempt < state.retryAttempts && response.status >= 500) {
+                        await new Promise(r => setTimeout(r, state.retryDelay * attempt));
+                        return this.request(endpoint, options, attempt + 1);
+                    }
+                    
+                    return data;
+                } catch (error) {
+                    if (attempt < state.retryAttempts) {
+                        await new Promise(r => setTimeout(r, state.retryDelay * attempt));
+                        return this.request(endpoint, options, attempt + 1);
+                    }
+                    throw error;
+                }
+            },
+            
+            signup: (email, password, centreName) => 
+                api.request('/auth/v1/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email,
+                        password,
+                        data: { centre_name: centreName || 'My Centre' }
+                    })
+                }),
+            
+            signin: (email, password) => 
+                api.request('/auth/v1/token?grant_type=password', {
+                    method: 'POST',
+                    body: JSON.stringify({ email, password })
+                })
+        };
 
-        ReactDOM.render(<IQAAssistant />, document.getElementById('root'));
+        // Check if user is logged in
+        window.onload = function() {
+            const session = utils.getSession();
+            if (session) {
+                showDashboard(session);
+            }
+        };
 
+        function switchTab(mode) {
+            state.currentMode = mode;
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const centreField = document.getElementById('centreField');
+            const authBtn = document.getElementById('authBtn');
+            
+            if (mode === 'signup') {
+                centreField.classList.remove('hidden');
+                authBtn.textContent = 'Create Account';
+            } else {
+                centreField.classList.add('hidden');
+                authBtn.textContent = 'Sign In';
+            }
+            
+            document.getElementById('message').innerHTML = '';
+            document.getElementById('authForm').reset();
+        }
+
+        async function handleAuth(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const centreName = document.getElementById('centreName').value.trim();
+            const messageDiv = document.getElementById('message');
+            const btn = document.getElementById('authBtn');
+            
+            // Client-side validation
+            if (!utils.validateEmail(email)) {
+                messageDiv.innerHTML = '<div class="message error">Please enter a valid email address</div>';
+                return;
+            }
+            
+            if (!utils.validatePassword(password)) {
+                messageDiv.innerHTML = '<div class="message error">Password must be at least 6 characters</div>';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            messageDiv.innerHTML = '';
+
+            try {
+                const data = state.currentMode === 'signup' 
+                    ? await api.signup(email, password, centreName)
+                    : await api.signin(email, password);
+
+                if (data.error) {
+                    const errorMsg = data.error.message === 'Invalid login credentials' 
+                        ? 'Invalid email or password' 
+                        : data.error.message;
+                    messageDiv.innerHTML = `<div class="message error">${errorMsg}</div>`;
+                } else if (state.currentMode === 'signup') {
+                    messageDiv.innerHTML = `<div class="message success">✅ Success! Check your email (${email}) to verify your account, then sign in!</div>`;
+                    setTimeout(() => {
+                        switchTab('signin');
+                        document.getElementById('email').value = email;
+                    }, 3000);
+                } else {
+                    const user = {
+                        id: data.user.id,
+                        email: data.user.email,
+                        centre_name: data.user.user_metadata?.centre_name || 'My Centre',
+                        token: data.access_token,
+                        created_at: Date.now()
+                    };
+                    
+                    if (utils.setSession(user)) {
+                        showDashboard(user);
+                    } else {
+                        messageDiv.innerHTML = '<div class="message error">Session storage failed. Please enable cookies.</div>';
+                    }
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                messageDiv.innerHTML = '<div class="message error">Network error. Please check your connection and try again.</div>';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = state.currentMode === 'signup' ? 'Create Account' : 'Sign In';
+            }
+        }
+
+        function showDashboard(user) {
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('userInfo').textContent = `${user.centre_name} | ${user.email}`;
+            
+            // Session refresh check (every 5 minutes)
+            setInterval(() => {
+                const session = utils.getSession();
+                if (!session || (Date.now() - session.created_at > 3600000)) {
+                    logout();
+                }
+            }, 300000);
+        }
+
+        function logout() {
+            utils.clearSession();
+            location.reload();
+        }
     </script>
 
     <!-- Vercel Speed Insights -->
@@ -747,5 +441,4 @@
     <script defer src="/_vercel/speed-insights/script.js"></script>
 
 </body>
-
 </html>
